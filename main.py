@@ -20,7 +20,6 @@ def parse_args():
     parser.add_argument("--eval_model_code", type=str, default="contriever")
     parser.add_argument('--eval_dataset', type=str, default="nq", help='BEIR dataset to evaluate')
     parser.add_argument('--split', type=str, default='test')
-    parser.add_argument("--orig_beir_results", type=str, default=None, help='Eval results of eval_model on the original beir eval_dataset')
     parser.add_argument("--query_results_dir", type=str, default='main')
 
     # LLM settings
@@ -54,26 +53,17 @@ def main():
 
     # load target queries and answers
     if args.eval_dataset == 'msmarco':
-        args.split = 'train'
+        corpus, queries, qrels = load_beir_datasets("msmarco", "train")
+    else:
+        corpus, queries, qrels = load_beir_datasets(args.eval_dataset, args.split)
 
-    corpus, queries, qrels = load_beir_datasets(args.eval_dataset, args.split)
     incorrect_answers = load_json(f'results/adv_targeted_results/{args.eval_dataset}.json')
     incorrect_answers = list(incorrect_answers.values())
 
-    # load BEIR top_k results  
-    if args.orig_beir_results is None: 
-        print(f"Please evaluate on BEIR first -- {args.eval_model_code} on {args.eval_dataset}")
-        # Try to get beir eval results from ./beir_results
-        print("Now try to get beir eval results from results/beir_results/...")
-        if args.split == 'test':
-            args.orig_beir_results = f"results/beir_results/{args.eval_dataset}-{args.eval_model_code}.json"
-        elif args.split == 'dev':
-            args.orig_beir_results = f"results/beir_results/{args.eval_dataset}-{args.eval_model_code}-dev.json"
-        if args.score_function == 'cos_sim':
-            args.orig_beir_results = f"results/beir_results/{args.eval_dataset}-{args.eval_model_code}-cos.json"
-        assert os.path.exists(args.orig_beir_results), f"Failed to get beir_results from {args.orig_beir_results}!"
-        print(f"Automatically get beir_resutls from {args.orig_beir_results}.")
-    with open(args.orig_beir_results, 'r') as f:
+    orig_beir_path = f"results/beir_results/{args.eval_dataset}-{args.eval_model_code}.json"
+    if args.score_function == 'cos_sim':
+        orig_beir_path = f"results/beir_results/{args.eval_dataset}-{args.eval_model_code}-cos.json"
+    with open(orig_beir_path, 'r') as f:
         results = json.load(f)
     # assert len(qrels) <= len(results)
     print('Total samples:', len(results))
