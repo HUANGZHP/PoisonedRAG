@@ -2,6 +2,7 @@
     "model_info":{
         "provider":"gpt",
         "name":"gpt-4-0613"
+        "base_url":"https://api.chatanywhere.tech/v1"
     },
     "api_key_info":{
         "api_keys":[
