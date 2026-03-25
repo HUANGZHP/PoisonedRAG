@@ -2,6 +2,7 @@
     "model_info":{
         "provider":"llama",
         "name":"meta-llama/Llama-2-13b-chat-hf"
+        "base_url":"https://api.chatanywhere.tech/v1"
     },
     "api_key_info":{
         "api_keys":[
