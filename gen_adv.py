@@ -23,7 +23,7 @@ ADV_PROMPT = [
 ]
 
 def query_gpt(input, model_name, return_json: bool):
-    url = 'https://api.openai.com/v1/chat/completions'
+    url = "https://api.chatanywhere.tech/v1"
     headers = {
         'Authorization': f"Bearer {'Your API key'}",
         'Content-Type': 'application/json'
